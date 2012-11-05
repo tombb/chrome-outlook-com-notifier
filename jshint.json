@@ -1,0 +1,27 @@
+{
+  "node": true,
+  "browser":true,
+  "curly": true,
+  "devel": true,
+  "eqeqeq": true,
+  "eqnull": true,
+  "es5": false,
+  "evil": false,
+  "immed": true,
+  "indent":2,
+  "jquery": true,
+  "latedef": false,
+  "laxcomma": true,
+  "laxbreak": true,
+  "newcap": true,
+  "noempty": true,
+  "nonew": true,
+  "predef": [
+    "webkitNotifications",
+    "chrome",
+    "YUI"
+  ],
+  "strict": false,
+  "trailing": false,
+  "undef": true
+}

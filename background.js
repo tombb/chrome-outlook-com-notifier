@@ -1,0 +1,1 @@
+var NOTIFIER = new ExampleNotifier();

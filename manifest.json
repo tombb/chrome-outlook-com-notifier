@@ -1,0 +1,25 @@
+{
+	"name": "Base Notifier",
+	"version": "0.3",
+	"manifest_version": 2,
+	"description": "A generic notifier plugin.",
+	"browser_action": {
+		"default_icon": "browser-action-icon-inactive.png" 
+	},
+	"background": {
+		"page": "background.html"
+	},
+	"options_page": "options.html",
+	"permissions": [
+		"cookies",
+		"webRequest",
+		"webRequestBlocking",
+		"notifications",
+		"tabs",
+		"*://login.microsoftonline.com/",
+		"*://*.outlook.com/"
+	],
+	"web_accessible_resources" : [
+		"app.png"
+	]
+}
