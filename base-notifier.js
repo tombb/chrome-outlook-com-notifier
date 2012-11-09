@@ -171,12 +171,12 @@ YUI.add('base-notifier', function (Y) {
 		},
 
 		/**
-			* Callback function fired when one of the tabs/pages of the
-			* app is updated/reloaded.
-			* @param {Int} tabId Id of the tab that's changed
-			* @param {Obj} changeInfo Information about the change
-			* @param {Chrome Extension Tab} Tab instance
-			*/
+		 * Callback function fired when one of the tabs/pages of the
+		 * app is updated/reloaded.
+		 * @param {Int} tabId Id of the tab that's changed
+		 * @param {Obj} changeInfo Information about the change
+		 * @param {Chrome Extension Tab} Tab instance
+		 */
 		onAppReload : function (tabId, changeInfo, tab) {
 			this._timer.cancel();
 			this._timer = Y.later(60000, this, this.fetchNumber, {}, true);
@@ -184,9 +184,9 @@ YUI.add('base-notifier', function (Y) {
 		},
 
 		/**
-			* Draws the browserAction icon for this extension.
-			* @param {String} txt 
-			*/ 
+		 * Draws the browserAction icon for this extension.
+		 * @param {String} txt 
+		 */ 
 		drawIcon : function (txt) {
 			var 
 				canvas = document.getElementById('iconCanvas'),
@@ -195,6 +195,7 @@ YUI.add('base-notifier', function (Y) {
 				iconURL = this._loggedIn ? this.get('icons').loggedIn : this.get('icons').notLoggedIn,
 				badgeColor = this._loggedIn ? this.get('loggedInColor') : this.get('notLoggedInColor');
 				
+			context.clearRect(0, 0, canvas.width, canvas.height);
 			imageObj.onload = function() {
 				context.drawImage(imageObj, 0, 0, 19, 19);
 				var imageData = context.getImageData(0, 0, 19, 19);
@@ -202,17 +203,21 @@ YUI.add('base-notifier', function (Y) {
 					imageData: imageData
 				});
 				chrome.browserAction.setBadgeBackgroundColor({ color: badgeColor });
-				chrome.browserAction.setBadgeText({ text: txt || "0"});
+				if (txt) {
+					chrome.browserAction.setBadgeText({ text: txt || "0"});
+				} else {
+					chrome.browserAction.setBadgeText({ text: '' });
+				}
 			};
 			imageObj.src = iconURL;
 		},
 
 		/**
-			* Fetches the number to be displayed in the extension icon using
-			* an XHR request. Updates the icon and launches a notification if
-			* needed / applicable.
-			* @returns {Void}
-			*/ 
+		 * Fetches the number to be displayed in the extension icon using
+		 * an XHR request. Updates the icon and launches a notification if
+		 * needed / applicable.
+		 * @returns {Void}
+		 */ 
 		fetchNumber : function (xhr) {
 			if (this.get('url')) {
 				this.drawIcon("...");
@@ -227,10 +232,10 @@ YUI.add('base-notifier', function (Y) {
 		},
 
 		/**
-			* Success callback for fetchNumber()
-			* @param {Int} id YUI IO transaction ID
-			* @param {Object} reponse YUI IO response object
-			*/ 
+		 * Success callback for fetchNumber()
+		 * @param {Int} id YUI IO transaction ID
+		 * @param {Object} reponse YUI IO response object
+		 */ 
 		onFetchNumberSuccess : function (id, response) {
 			var 
 				tmpNode = Y.Node.create(response.responseText),
@@ -278,10 +283,10 @@ YUI.add('base-notifier', function (Y) {
 		},
 
 		/**
-			* Failure callback for fetchNumber()
-			* @param {Int} id YUI IO transaction ID
-			* @param {Object} reponse YUI IO response object
-			*/ 
+		 * Failure callback for fetchNumber()
+		 * @param {Int} id YUI IO transaction ID
+		 * @param {Object} reponse YUI IO response object
+		 */ 
 		onFetchNumberFailure : function (id, response) {
 			this._loggedIn = false;
 			this._numFailedConnections += 1;
@@ -295,8 +300,8 @@ YUI.add('base-notifier', function (Y) {
 		},
 
 		/**
-			* Shows a desktop notification to notify the user of new email.
-			*/ 
+		 * Shows a desktop notification to notify the user of new email.
+		 */ 
 		notify : function () {
 			var me = this;
 			if (this.get('notificationPreference')) {
@@ -317,13 +322,15 @@ YUI.add('base-notifier', function (Y) {
 		},
 
 		/**
-			* Opens the web app in new tab unless it's opened already in the
-			* currently selected tab.
-			*/ 
+		 * Opens the web app in new tab unless it's opened already in the
+		 * currently selected tab.
+		 */ 
 		openApp : function () {
 			var 
 				me = this,
-				active = false;
+				active = false,
+				dLen = me.get('domains').length;
+
 			Y.Array.map(
 				me.get('domains'), 
 				function (e) {
@@ -331,6 +338,7 @@ YUI.add('base-notifier', function (Y) {
 					chrome.tabs.query({
 						url : pattern
 					}, function (tabs) {
+						dLen = dLen-1;
 						var 
 							tabsLen = tabs.length,
 							i;
@@ -342,7 +350,7 @@ YUI.add('base-notifier', function (Y) {
 							active = true;
 							break;
 						}
-						if (!active) {
+						if (!active && (dLen === 0)) {
 							active = true;
 							chrome.tabs.create({
 								url: me.get('url'),
