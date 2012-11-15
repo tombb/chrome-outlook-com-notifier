@@ -17,12 +17,17 @@ Write your own notifier/checker extension in a few simple steps:
 
 2. Replace the following files by your own images:
 
-   * `app.png` - Image shown on the options page and in desktop notifications
-     of your extension
-   * `browser-action-icon-active.png` - Active browser icon, shown when the
-     extension is successfully polling your app or site.
-   * `browser-action-icon-inactive.png` - Inactive browser icon, shown when
-     the extenstion couldn't reach the app or site it's checking for activity.
+   `app.png`
+   Image shown on the options page and in desktop notifications of your
+   extension.
+
+   `browser-action-icon-active.png`
+   Active browser icon, shown when the extension is successfully polling your
+   app or site.
+   
+   `browser-action-icon-inactive.png`
+    Inactive browser icon, shown when the extenstion couldn't reach the app 
+    or site it's checking for activity.
 
 3. Add the domain(s) for which your extension needs permission to manifest.json 
    and example-notifier.js:
