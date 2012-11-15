@@ -16,8 +16,7 @@
 		"webRequestBlocking",
 		"notifications",
 		"tabs",
-		"*://login.microsoftonline.com/",
-		"*://*.outlook.com/"
+		"*://*.domain.of.your.app.com/",
 	],
 	"web_accessible_resources" : [
 		"app.png"
