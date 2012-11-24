@@ -1,8 +1,8 @@
 {
-	"name": "Notifier Extension Starter",
-	"version": "0.3",
+	"name": "Outlook.com Notifier",
+	"version": "0.1",
 	"manifest_version": 2,
-	"description": "A generic notifier plugin.",
+	"description": "Displays the number of unread emails in your Outlook.com inbox. Optionally provides desktop notifications.",
 	"browser_action": {
 		"default_icon": "browser-action-icon-inactive.png" 
 	},
@@ -16,9 +16,13 @@
 		"webRequestBlocking",
 		"notifications",
 		"tabs",
-		"*://www.random.org/"
+		"*://signout.live.com/",
+		"*://login.live.com/",
+		"*://*.mail.live.com/",
+		"*://*.outlook.com/"
 	],
 	"web_accessible_resources" : [
-		"app.png"
+		"app.png",
+		"browser-action-icon-active.png" 
 	]
 }

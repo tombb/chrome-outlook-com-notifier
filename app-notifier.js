@@ -18,19 +18,19 @@ YUI().use('base-notifier', function (Y) {
 	// Attributes
 	//
 	AppNotifier.ATTRS = {
-
+		
 		/**
-		 * Title of the extension
+		 * The title of the extentsion
 		 */ 
 		title : {
-			value : 'Notifier Extension Starter'
+			value : 'Outlook.com Notifier'
 		},
-
+	
 		/**
 		 * The URL of the app
 		 */ 
 		url : {
-			value : 'http://www.random.org/integers/?num=1&min=1&max=50&col=1&base=10&format=html&rnd=new'
+			value : 'https://mail.live.com'
 		},
 		
 		/**
@@ -39,15 +39,28 @@ YUI().use('base-notifier', function (Y) {
 		 */ 
 		domains : {
 			value : [
-				'www.random.org'
+				'signout.live.com',
+				'login.live.com',
+				'mail.live.com',
 			]
 		},
 
 		/**
-		 * The font color of the icon while the user is logged in to the app
+		 * Text to display to the user
+		 */
+		text : {
+			value : {
+				success     : 'You have {num} unread emails in your Outlook.com inbox.',
+				notLoggedIn : 'You are currently not signed in to Outlook.com. Click to sign in.',
+				notificationTitle : 'New email!'
+			}
+		},
+
+		/**
+		 * The background color of the icon text while the user is logged in to the app
 		 */ 
 		loggedInColor : {
-			value : [246,101,2,200]
+			value : [0,43,150,255]
 		}
 	};
 
@@ -60,7 +73,13 @@ YUI().use('base-notifier', function (Y) {
 		 * contents of ATTRS.url.
 		 */ 
 		getNumberFromNode : function (node) {
-			return node.one('pre.data').get('text').replace(/[^\d]/,'');
+			var cNode;
+			if (node) {
+				if (cNode = node.one('.count')) {
+					return cNode.get('text') || 0;
+				}
+			}
+			return null;
 		}
 	});
 });
