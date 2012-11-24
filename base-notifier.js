@@ -18,6 +18,13 @@ YUI.add('base-notifier', function (Y) {
 	// Attributes
 	//
 	BaseNotifier.ATTRS = {
+		
+		/**
+		 * The title of your extension
+		 */ 
+		title : {
+			value : null
+		},
 
 		/**
 		 * The URL of the app
@@ -29,7 +36,7 @@ YUI.add('base-notifier', function (Y) {
 		/**
 		 * Known domains for the app. Domains here must be listed under
 		 * permissions in your manifest.json.
-		 */ 
+		 */
 		domains : {
 			value : [
 				'your.domain.com',
@@ -245,7 +252,7 @@ YUI.add('base-notifier', function (Y) {
 				this._loggedIn = true;
 				if (Y.Lang.isNull(this._number)) {
 					this._number = newNumber;
-				} else if (this._number < newNumber) {
+				} else if (parseInt(this._number, 10) < parseInt(newNumber, 10)) {
 					this._number = newNumber;
 					this.notify();
 				}

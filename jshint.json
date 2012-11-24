@@ -19,7 +19,9 @@
   "predef": [
     "webkitNotifications",
     "chrome",
-    "YUI"
+    "YUI",
+    "BaseNotifier",
+    "AppNotifier"
   ],
   "strict": false,
   "trailing": false,

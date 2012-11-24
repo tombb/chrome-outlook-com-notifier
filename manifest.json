@@ -1,5 +1,5 @@
 {
-	"name": "Base Notifier",
+	"name": "Notifier Extension Starter",
 	"version": "0.3",
 	"manifest_version": 2,
 	"description": "A generic notifier plugin.",
@@ -16,7 +16,7 @@
 		"webRequestBlocking",
 		"notifications",
 		"tabs",
-		"*://*.domain.of.your.app.com/",
+		"*://www.random.org/"
 	],
 	"web_accessible_resources" : [
 		"app.png"

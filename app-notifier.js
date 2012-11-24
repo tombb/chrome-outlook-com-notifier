@@ -1,29 +1,36 @@
 //
 // Export
 //
-var ExampleNotifier;
+var AppNotifier;
 
 YUI().use('base-notifier', function (Y) {
 
 	/**
 	 * @constructor
 	 */ 
-	ExampleNotifier = function () {
+	AppNotifier = function () {
 		arguments.callee.superclass.constructor.apply(this, arguments);
 	};
 
-	ExampleNotifier.NAME = "ExampleNotifier";
+	AppNotifier.NAME = "AppNotifier";
 
 	//
 	// Attributes
 	//
-	ExampleNotifier.ATTRS = {
+	AppNotifier.ATTRS = {
+
+		/**
+		 * Title of the extension
+		 */ 
+		title : {
+			value : 'Notifier Extension Starter'
+		},
 
 		/**
 		 * The URL of the app
 		 */ 
 		url : {
-			value : 'https://url.to.yourapp.com'
+			value : 'http://www.random.org/integers/?num=1&min=1&max=50&col=1&base=10&format=html&rnd=new'
 		},
 		
 		/**
@@ -32,8 +39,7 @@ YUI().use('base-notifier', function (Y) {
 		 */ 
 		domains : {
 			value : [
-				'domain.of.your.app.com',
-				'anotherdomain.of.your.app.com'
+				'www.random.org'
 			]
 		},
 
@@ -45,7 +51,7 @@ YUI().use('base-notifier', function (Y) {
 		}
 	};
 
-	Y.extend(ExampleNotifier, BaseNotifier, {
+	Y.extend(AppNotifier, BaseNotifier, {
 
 		/**
 		 * Override this function with your own code to get the number of
@@ -54,8 +60,7 @@ YUI().use('base-notifier', function (Y) {
 		 * contents of ATTRS.url.
 		 */ 
 		getNumberFromNode : function (node) {
-			// e.g:
-			// return node.one('.some .selector').get('text');
+			return node.one('pre.data').get('text').replace(/[^\d]/,'');
 		}
 	});
 });
