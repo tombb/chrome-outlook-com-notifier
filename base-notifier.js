@@ -155,9 +155,9 @@ YUI.add('base-notifier', function (Y) {
 			// Page reloads within the app
 			//
 			chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-				if (changeInfo.url) {
+				if (changeInfo.status === 'complete') {
 					if (Y.Array.find(me.get('domains'), function (e) {
-						return changeInfo.url.match(new RegExp('https?:\\/\\/.*\\.' + e));
+						return tab.url.match(new RegExp('https?:\\/\\/([^.]*\\.)?' + e));
 					})) {
 						me.onAppReload(tabId, changeInfo, tab);
 					}
@@ -165,21 +165,28 @@ YUI.add('base-notifier', function (Y) {
 			});
 			
 			//
-			// NOTE: Receiving messages from content script - can use this
-			// to update icon when user is opening emails etc.
+			// Listen for messages from the content script
 			//
-			//chrome.extension.onRequest.addListener(
-			//	function(request, sender, sendResponse) {
-			//		if (request.url) {
-			//			
-			//		}
-			//	}
-			//);
+			chrome.extension.onMessage.addListener(
+				function(request, sender, sendResponse) {
+					if (Y.Lang.isValue(request.number)) {
+						me.drawNumberAndNotify(request.number || 0, request.notify);
+						try {
+							me._timer.cancel();
+						} catch (e) {
+						}
+					}
+					if (request.unload) {
+						me._timer = Y.later(60000, me, me.fetchNumber, {}, true);
+					}
+				}
+			);
 		},
 
 		/**
 		 * Callback function fired when one of the tabs/pages of the
-		 * app is updated/reloaded.
+		 * app is updated/reloaded. Injects a content script that
+		 * notifies the extension of changes in the number of items.
 		 * @param {Int} tabId Id of the tab that's changed
 		 * @param {Obj} changeInfo Information about the change
 		 * @param {Chrome Extension Tab} Tab instance
@@ -187,9 +194,46 @@ YUI.add('base-notifier', function (Y) {
 		onAppReload : function (tabId, changeInfo, tab) {
 			this._timer.cancel();
 			this._timer = Y.later(60000, this, this.fetchNumber, {}, true);
-			Y.later(5000, this, this.fetchNumber, {}, false);
+			var nodeToNumber = this.getNumberFromNode.toString();
+			chrome.tabs.executeScript(tabId, {
+				file: "yui-min.js",
+				runAt: "document_start"
+			});
+			chrome.tabs.executeScript(tabId, {
+				code: "(function () {" +
+					"var iId = setInterval(function () { " + 
+					"  if (YUI && top == self) {" +
+					"    clearInterval(iId);" +
+					"    YUI().use(['base-base', 'node-base', 'event-base'], function (Y) {" +
+					"      var f = " + nodeToNumber + ";" +
+					"      var tLastActive = (new Date).getTime()/1000;" +
+					"      var tLastMsg, n, oldT, oldN;" +
+					"      Y.one(document).on(['click', 'keydown', 'mouseover'], function () {" +
+					"        tLastActive = (new Date).getTime()/1000;" +
+					"      }); " +
+					"      setInterval(function () {" +
+					"        oldN = n; " +
+					"        n = f(Y.one('document'));" +
+					"        t = (new Date).getTime()/1000;" +
+					"        if ((oldN !== n) || (t - tLastMsg > 10)) {" +
+					"            chrome.extension.sendMessage(" +
+					"              { number: n, notify: t-tLastActive > 60 }," +
+					"              function(response) { }" +
+					"            ); " +
+					"        }" +
+					"      }, 2000); " +
+					"      Y.on('unload', function () {" +
+					"         chrome.extension.sendMessage(" +
+					"             {unload: true }," +
+					"             function(response) { }" +
+					"         ); " +
+					"      });" +
+					"    });" +
+					"  }" +
+					"}, 200); })();",
+					runAt: "document_end"
+			});
 		},
-
 		/**
 		 * Draws the browserAction icon for this extension.
 		 * @param {String} txt 
@@ -211,7 +255,7 @@ YUI.add('base-notifier', function (Y) {
 				});
 				chrome.browserAction.setBadgeBackgroundColor({ color: badgeColor });
 				if (txt) {
-					chrome.browserAction.setBadgeText({ text: txt || "0"});
+					chrome.browserAction.setBadgeText({ text: txt });
 				} else {
 					chrome.browserAction.setBadgeText({ text: '' });
 				}
@@ -250,22 +294,7 @@ YUI.add('base-notifier', function (Y) {
 				tmpNode = Y.Node.create(response.responseText),
 				newNumber = this.getNumberFromNode(tmpNode);
 
-			if (!Y.Lang.isNull(newNumber)) {
-				this._loggedIn = true;
-				if (Y.Lang.isNull(this._number)) {
-					this._number = newNumber;
-				} else if (parseInt(this._number, 10) < parseInt(newNumber, 10)) {
-					this._number = newNumber;
-					this.notify();
-				}
-				this.drawIcon(newNumber);
-				chrome.browserAction.setTitle({
-					title: Y.Lang.sub(
-						this.get('text').success,
-						{ num : (newNumber || '0') }
-					)
-				});
-			} else {
+			if (!this.drawNumberAndNotify(newNumber, true)) {
 				this.onFetchNumberFailure(id, response);
 			}
 			
@@ -273,6 +302,37 @@ YUI.add('base-notifier', function (Y) {
 			// Clean up
 			//
 			tmpNode.destroy(true);
+		},
+
+		/**
+		 * Success callback for fetchNumber()
+		 * @param {Int} newNumber The new number of items to display
+		 * @param {Boolean} doNotify Whether or not to create a desktop notification 
+		 * @returns Boolean
+		 */ 
+		drawNumberAndNotify : function (newNumber, doNotify) {
+			if (!Y.Lang.isNull(newNumber)) {
+				this._loggedIn = true;
+				if (Y.Lang.isNull(this._number)) {
+				} else if (this._number < newNumber) {
+					if (doNotify) {
+						this._number = newNumber;
+						this.notify();
+					}
+				}
+				this._number = newNumber;
+				this.drawIcon(
+					newNumber === 0 ? '' : newNumber.toString()
+				);
+				chrome.browserAction.setTitle({
+					title: Y.Lang.sub(
+						this.get('text').success,
+						{ num : (newNumber.toString() || '0') }
+					)
+				});
+				return true;
+			}
+			return false;
 		},
 
 		/**
@@ -320,7 +380,7 @@ YUI.add('base-notifier', function (Y) {
 				this.notification = webkitNotifications.createNotification(
 					this.get('icons').notification,  // icon url - can be relative
 					this.get('text').notificationTitle,  // notification title
-					Y.Lang.sub(this.get('text').success, { num : me._number })
+					Y.Lang.sub(this.get('text').success, { num : me._number.toString() })
 				);
 				this.notification.onclick = function () {
 					me.openApp(); 
@@ -365,7 +425,6 @@ YUI.add('base-notifier', function (Y) {
 								url: me.get('url'),
 								windowId : chrome.windows.WINDOW_ID_CURRENT
 							}, function (tab) {
-								me.fetchNumber();
 								chrome.windows.update(tab.windowId, {focused: true});
 							});
 						}
