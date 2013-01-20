@@ -62,6 +62,8 @@ YUI().use('base-notifier', function (Y) {
 		loggedInColor : {
 			value : [0,43,150,255]
 		}
+
+
 	};
 
 	Y.extend(AppNotifier, BaseNotifier, {
@@ -71,12 +73,13 @@ YUI().use('base-notifier', function (Y) {
 		 * items from the url specified under ATTRS.
 		 * @param {HTMLElement} node (YUI) DOM node representation of the page 
 		 * contents of ATTRS.url.
+		 * @returns Integer or null
 		 */ 
 		getNumberFromNode : function (node) {
 			var cNode;
 			if (node) {
 				if (cNode = node.one('.count')) {
-					return cNode.get('text') || 0;
+					return parseInt(cNode.get('text'), 10) || 0;
 				}
 			}
 			return null;
