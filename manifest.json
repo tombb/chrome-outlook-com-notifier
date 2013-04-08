@@ -1,6 +1,6 @@
 {
 	"name": "Outlook.com Notifier",
-	"version": "0.1",
+	"version": "0.2",
 	"manifest_version": 2,
 	"description": "Displays the number of unread emails in your Outlook.com inbox. Optionally provides desktop notifications.",
 	"browser_action": {
