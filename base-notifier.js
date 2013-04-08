@@ -217,7 +217,7 @@ YUI.add('base-notifier', function (Y) {
 					"        t = (new Date).getTime()/1000;" +
 					"        if ((oldN !== n) || (t - tLastMsg > 10)) {" +
 					"            chrome.extension.sendMessage(" +
-					"              { number: n, notify: t-tLastActive > 60 }," +
+					"              { number: n, notify: t-tLastActive > 20 }," +
 					"              function(response) { }" +
 					"            ); " +
 					"        }" +
