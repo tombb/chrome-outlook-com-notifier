@@ -1,28 +1,28 @@
 {
-	"name": "Outlook.com Notifier",
-	"version": "0.2",
-	"manifest_version": 2,
-	"description": "Displays the number of unread emails in your Outlook.com inbox. Optionally provides desktop notifications.",
-	"browser_action": {
-		"default_icon": "browser-action-icon-inactive.png" 
-	},
-	"background": {
-		"page": "background.html"
-	},
-	"options_page": "options.html",
-	"permissions": [
-		"cookies",
-		"webRequest",
-		"webRequestBlocking",
-		"notifications",
-		"tabs",
-		"*://signout.live.com/",
-		"*://login.live.com/",
-		"*://*.mail.live.com/",
-		"*://*.outlook.com/"
-	],
-	"web_accessible_resources" : [
-		"app.png",
-		"browser-action-icon-active.png" 
-	]
+    "name": "Outlook.com Notifier",
+    "version": "0.2",
+    "manifest_version": 2,
+    "description": "Displays the number of unread emails in your Outlook.com inbox. Optionally provides desktop notifications.",
+    "browser_action": {
+        "default_icon": "browser-action-icon-inactive.png"
+    },
+    "background": {
+        "page": "background.html"
+    },
+    "options_page": "options.html",
+    "permissions": [
+        "cookies",
+        "webRequest",
+        "webRequestBlocking",
+        "notifications",
+        "tabs",
+        "*://signout.live.com/",
+        "*://login.live.com/",
+        "*://*.mail.live.com/",
+        "*://*.outlook.com/"
+    ],
+    "web_accessible_resources" : [
+        "app.png",
+        "browser-action-icon-active.png"
+    ]
 }
