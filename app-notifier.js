@@ -78,7 +78,8 @@ YUI().use('base-notifier', function (Y) {
         getNumberFromNode : function (node) {
             var cNode;
             if (node) {
-                if (cNode = node.one('.count')) {
+                cNode = node.one('.count');
+                if (cNode) {
                     return parseInt(cNode.get('text'), 10) || 0;
                 }
             }
