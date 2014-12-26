@@ -196,7 +196,7 @@ YUI.add('base-notifier', function (Y) {
             this._timer = Y.later(60000, this, this.fetchNumber, {}, true);
             var nodeToNumber = this.getNumberFromNode.toString();
             chrome.tabs.executeScript(tabId, {
-                file: "yui-min.js",
+                file: "lib/yui.js",
                 runAt: "document_start"
             });
             chrome.tabs.executeScript(tabId, {
