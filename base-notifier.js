@@ -200,38 +200,16 @@ YUI.add('base-notifier', function (Y) {
                 runAt: "document_start"
             });
             chrome.tabs.executeScript(tabId, {
-                code: "(function () {" +
-                    "var iId = setInterval(function () { " +
-                    "  if (YUI && top == self) {" +
-                    "    clearInterval(iId);" +
-                    "    YUI().use(['base-base', 'node-base', 'event-base'], function (Y) {" +
-                    "      var f = " + nodeToNumber + ";" +
-                    "      var tLastActive = (new Date).getTime()/1000;" +
-                    "      var tLastMsg, n, oldT, oldN;" +
-                    "      Y.one(document).on(['click', 'keydown', 'mouseover'], function () {" +
-                    "        tLastActive = (new Date).getTime()/1000;" +
-                    "      }); " +
-                    "      setInterval(function () {" +
-                    "        oldN = n; " +
-                    "        n = f(Y.one('document'));" +
-                    "        t = (new Date).getTime()/1000;" +
-                    "        if ((oldN !== n) || (t - tLastMsg > 10)) {" +
-                    "            chrome.extension.sendMessage(" +
-                    "              { number: n, notify: t-tLastActive > 20 }," +
-                    "              function(response) { }" +
-                    "            ); " +
-                    "        }" +
-                    "      }, 2000); " +
-                    "      Y.on('unload', function () {" +
-                    "         chrome.extension.sendMessage(" +
-                    "             {unload: true }," +
-                    "             function(response) { }" +
-                    "         ); " +
-                    "      });" +
-                    "    });" +
-                    "  }" +
-                    "}, 200); })();",
-                    runAt: "document_end"
+                file: "base-notifier.js",
+                runAt: "document_start"
+            });
+            chrome.tabs.executeScript(tabId, {
+                file: "app-notifier.js",
+                runAt: "document_start"
+            });
+            chrome.tabs.executeScript(tabId, {
+                file: "content-script.js",
+                runAt: "document_end"
             });
         },
         /**
