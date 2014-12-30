@@ -62,8 +62,6 @@ YUI().use('base-notifier', function (Y) {
         loggedInColor : {
             value : [0,43,150,255]
         }
-
-
     };
 
     Y.extend(AppNotifier, BaseNotifier, {

@@ -86,10 +86,25 @@ YUI.add('base-notifier', function (Y) {
          */
         notificationPreference : {
             getter : function () {
-                if (Y.Lang.isValue(localStorage.base_notifier_desktop_notifications)) {
-                    return localStorage.base_notifier_desktop_notifications === '1';
+                var value = localStorage.base_notifier_desktop_notifications // legacy storage item
+                    || localStorage.options__enable_desktop_notifications;
+                if (Y.Lang.isValue(value)) {
+                    return value === '1';
                 }
                 return true;
+            }
+        },
+
+        /**
+         * The user's desktop notifications preference. True means they want
+         * desktop notifications - False means they don't.
+         */
+        notificationSoundPreference : {
+            getter : function () {
+                if (Y.Lang.isValue(localStorage.options__enable_notification_sound)) {
+                    return localStorage.options__enable_notification_sound === '1';
+                }
+                return false;
             }
         }
     };
@@ -347,22 +362,35 @@ YUI.add('base-notifier', function (Y) {
         },
 
         /**
-         * Shows a desktop notification to notify the user of new email.
+         * Notify the user of new email.
          */
         notify : function () {
-            var me = this;
+            this.showDesktopNotification();
+            this.playNotificationSound();
+        },
+
+        showDesktopNotification : function () {
             if (this.get('notificationPreference')) {
                 chrome.notifications.create(this.get('text').notificationTitle, {
                     type: "basic",
                     title: this.get('text').notificationTitle,
-                    message: Y.Lang.sub(this.get('text').success, { num : me._number.toString() }),
+                    message: Y.Lang.sub(this.get('text').success, { num : this._number.toString() }),
                     iconUrl: this.get('icons').notification
                 }, function () {});
+
+                var me = this;
                 chrome.notifications.onClicked.addListener(function (notificationId) {
                     if (notificationId === me.get('text').notificationTitle) {
                         me.openApp();
                     }
                 });
+            }
+        },
+
+        playNotificationSound : function() {
+            if (this.get('notificationSoundPreference')) {
+                var audio = new Audio("audio/default-notification.mp3");
+                audio.play();
             }
         },
 
