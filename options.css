@@ -54,6 +54,14 @@ a:active {
     top: 0;
     width: 216px;
     z-index: 2;
+    text-align: center;
+    padding-top: 15px;
+}
+
+#navbar-container .donate-button {
+    position: absolute;
+    bottom: 50px;
+    left: 62px;
 }
 
 html.hide-menu #navbar-container {

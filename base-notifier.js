@@ -60,9 +60,9 @@ YUI.add('base-notifier', function (Y) {
          */
         icons : {
             value : {
-                loggedIn : 'browser-action-icon-active.png',
-                notLoggedIn : 'browser-action-icon-inactive.png',
-                notification : 'app.png'
+                loggedIn : 'app.svg',
+                notLoggedIn : 'browser-action-icon-inactive.svg',
+                notification : 'browser-action-icon-active.svg'
             }
         },
 
