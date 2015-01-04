@@ -60,9 +60,15 @@ YUI.add('base-notifier', function (Y) {
          */
         icons : {
             value : {
-                loggedIn : 'app.svg',
-                notLoggedIn : 'browser-action-icon-inactive.svg',
-                notification : 'browser-action-icon-active.svg'
+                loggedIn : {
+                    '19' : 'browser-action-icon-active19x19.png',
+                    '38' : 'browser-action-icon-active76x76.png'
+                },
+                notLoggedIn : {
+                    '19' : 'browser-action-icon-inactive19x19.png',
+                    '38' : 'browser-action-icon-inactive76x76.png'
+                },
+                notification : 'app.svg'
             }
         },
 
@@ -233,27 +239,18 @@ YUI.add('base-notifier', function (Y) {
          */
         drawIcon : function (txt) {
             var
-                canvas = document.getElementById('iconCanvas'),
-                context = canvas.getContext('2d'),
-                imageObj = new Image(),
-                iconURL = this._loggedIn ? this.get('icons').loggedIn : this.get('icons').notLoggedIn,
+                iconPath = this._loggedIn ? this.get('icons').loggedIn : this.get('icons').notLoggedIn,
                 badgeColor = this._loggedIn ? this.get('loggedInColor') : this.get('notLoggedInColor');
 
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            imageObj.onload = function() {
-                context.drawImage(imageObj, 0, 0, 19, 19);
-                var imageData = context.getImageData(0, 0, 19, 19);
-                chrome.browserAction.setIcon({
-                    imageData: imageData
-                });
-                chrome.browserAction.setBadgeBackgroundColor({ color: badgeColor });
-                if (txt) {
-                    chrome.browserAction.setBadgeText({ text: txt });
-                } else {
-                    chrome.browserAction.setBadgeText({ text: '' });
-                }
-            };
-            imageObj.src = iconURL;
+            chrome.browserAction.setIcon({
+                path: iconPath
+            });
+            chrome.browserAction.setBadgeBackgroundColor({ color: badgeColor });
+            if (txt) {
+                chrome.browserAction.setBadgeText({ text: txt });
+            } else {
+                chrome.browserAction.setBadgeText({ text: '' });
+            }
         },
 
         /**
@@ -352,7 +349,7 @@ YUI.add('base-notifier', function (Y) {
         onFetchNumberFailure : function (id, response) {
             this._loggedIn = false;
             this._numFailedConnections += 1;
-            if (this._numFailedConnections > 3) {
+            if (this._numFailedConnections > 2) {
                 this._timer.cancel();
             }
             this.drawIcon("?");
